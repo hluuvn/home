@@ -4,101 +4,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pro Chat</title>
+<title>MAX Chat</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Orbitron',sans-serif}
-
-body{
- background:#0a0a14;
- color:white;
- height:100vh;
- display:flex;
- justify-content:center;
- align-items:center;
-}
+body{background:#0a0a14;color:white;height:100vh;display:flex;justify-content:center;align-items:center}
 
 /* LOGIN */
-.login{
- background:#111;
- padding:25px;
- border:1px solid #00f7ff;
- text-align:center;
-}
-input{padding:10px;width:200px;margin-top:10px;border:none}
-button{padding:10px;border:none;background:#00f7ff;cursor:pointer;margin-top:10px}
+.login{background:#111;padding:20px;border:1px solid #00f7ff;text-align:center}
+input{padding:10px;width:200px;border:none}
+button{padding:10px;background:#00f7ff;border:none;margin-top:10px;cursor:pointer}
 
-/* MAIN */
-.app{
- display:none;
- width:700px;
- height:500px;
- background:#111;
- border:1px solid #00f7ff;
- display:flex;
-}
+/* APP */
+.app{display:none;width:800px;height:500px;background:#111;border:1px solid #00f7ff;display:flex}
 
 /* USERS */
-.users{
- width:30%;
- border-right:1px solid #222;
- padding:10px;
-}
-.user{
- padding:5px;
- margin-bottom:5px;
- background:#0f172a;
-}
+.users{width:25%;border-right:1px solid #222;padding:10px}
+.user{padding:5px;margin-bottom:5px}
 
 /* CHAT */
-.chat{
- width:70%;
- display:flex;
- flex-direction:column;
-}
+.chat{width:75%;display:flex;flex-direction:column}
+.chat-box{flex:1;padding:10px;overflow-y:auto}
+.msg{margin-bottom:10px}
+.time{font-size:10px;color:#aaa}
+.bubble{background:#222;padding:8px;border-radius:8px;display:inline-block}
 
-.chat-box{
- flex:1;
- padding:10px;
- overflow-y:auto;
-}
-
-.msg{
- margin-bottom:10px;
-}
-
-.bubble{
- padding:8px;
- border-radius:8px;
- display:inline-block;
-}
-
-.time{
- font-size:10px;
- color:#aaa;
-}
-
-.chat-input{
- display:flex;
-}
-
-.chat-input input{
- flex:1;
- padding:10px;
- border:none;
-}
-
-.chat-input button{
- width:80px;
-}
-
-/* COLORS */
-.c1{color:#00f7ff}
-.c2{color:#ff4d4d}
-.c3{color:#0f0}
-.c4{color:#ffcc00}
+/* INPUT */
+.chat-input{display:flex}
+.chat-input input{flex:1;padding:10px;border:none}
+.chat-input button{width:80px}
 </style>
 
 </head>
@@ -113,15 +49,10 @@ button{padding:10px;border:none;background:#00f7ff;cursor:pointer;margin-top:10p
 
 <div class="app" id="app">
 
- <!-- USERS -->
-
  <div class="users">
    <h4>Online</h4>
    <div id="userList"></div>
-   <button onclick="clearChat()">🧹 Clear</button>
  </div>
-
- <!-- CHAT -->
 
  <div class="chat">
    <div class="chat-box" id="chatBox"></div>
@@ -136,11 +67,11 @@ button{padding:10px;border:none;background:#00f7ff;cursor:pointer;margin-top:10p
 
 <script>
 
-/* USER COLORS */
-const colors = ["c1","c2","c3","c4"];
+/* REALTIME CHANNEL */
+const channel = new BroadcastChannel("chat");
 
-/* DATABASE */
-let users = JSON.parse(localStorage.getItem("users")) || ["Admin","Player","Guest"];
+/* DATA */
+let users = JSON.parse(localStorage.getItem("users")) || [];
 let chatData = JSON.parse(localStorage.getItem("chat")) || [];
 
 /* LOGIN */
@@ -154,13 +85,14 @@ function login(){
  localStorage.setItem("session", u);
 
  start(u);
+
+ channel.postMessage({type:"join", user:u});
 }
 
 /* START */
 function start(user){
  loginBox.style.display="none";
  app.style.display="flex";
-
  renderUsers();
  renderChat();
 }
@@ -169,21 +101,37 @@ function start(user){
 let session = localStorage.getItem("session");
 if(session) start(session);
 
-/* USERS LIST */
+/* USERS */
 function renderUsers(){
  userList.innerHTML="";
- users.forEach((u,i)=>{
+ users.forEach(u=>{
   let div=document.createElement("div");
-  div.className="user "+colors[i%colors.length];
-  div.innerText = "● " + u;
+  div.className="user";
+  div.innerText="● "+u;
   userList.appendChild(div);
  });
 }
 
 /* TIME */
-function getTime(){
+function time(){
  let d=new Date();
  return d.getHours()+":"+d.getMinutes();
+}
+
+/* BOT AI */
+function botReply(text){
+ text = text.toLowerCase();
+
+ if(text.includes("hello") || text.includes("hi"))
+  return "🤖 Xin chào bro 😎";
+
+ if(text.includes("game"))
+  return "🤖 Game hay nhất là FPS Elite 🔥";
+
+ if(text.includes("ai"))
+  return "🤖 Tôi là AI fake nhưng khá thông minh 😏";
+
+ return "🤖 Tôi chưa hiểu nhưng vẫn rep 😅";
 }
 
 /* CHAT */
@@ -193,8 +141,8 @@ function renderChat(){
   let div=document.createElement("div");
   div.className="msg";
 
-  div.innerHTML = `
-   <div class="${m.color}"><b>${m.user}</b></div>
+  div.innerHTML=`
+   <b>${m.user}</b>
    <div class="bubble">${m.text}</div>
    <div class="time">${m.time}</div>
   `;
@@ -202,7 +150,7 @@ function renderChat(){
   chatBox.appendChild(div);
  });
 
- chatBox.scrollTop = chatBox.scrollHeight;
+ chatBox.scrollTop=chatBox.scrollHeight;
 }
 
 /* SEND */
@@ -212,29 +160,49 @@ function sendMsg(){
 
  if(!text) return;
 
- let color = colors[Math.floor(Math.random()*colors.length)];
+ let msg = {user,text,time:time()};
 
- chatData.push({
-  user,
-  text,
-  time:getTime(),
-  color
- });
-
+ chatData.push(msg);
  localStorage.setItem("chat", JSON.stringify(chatData));
+
+ channel.postMessage({type:"msg", data:msg});
 
  msgInput.value="";
  renderChat();
+
+ /* BOT */
+ setTimeout(()=>{
+  let reply = {
+   user:"AI Bot",
+   text:botReply(text),
+   time:time()
+  };
+
+  chatData.push(reply);
+  localStorage.setItem("chat", JSON.stringify(chatData));
+  channel.postMessage({type:"msg", data:reply});
+  renderChat();
+
+ },1000);
+
 }
 
-/* CLEAR */
-function clearChat(){
- if(confirm("Xoá chat?")){
-  chatData=[];
-  localStorage.removeItem("chat");
+/* RECEIVE REALTIME */
+channel.onmessage = (e)=>{
+ if(e.data.type==="msg"){
+  chatData.push(e.data.data);
+  localStorage.setItem("chat", JSON.stringify(chatData));
   renderChat();
  }
-}
+
+ if(e.data.type==="join"){
+  if(!users.includes(e.data.user)){
+   users.push(e.data.user);
+   localStorage.setItem("users", JSON.stringify(users));
+   renderUsers();
+  }
+ }
+};
 
 /* ENTER */
 msgInput?.addEventListener("keypress", e=>{

@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gaming Chat</title>
+<title>Pro Chat</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 
@@ -14,51 +14,49 @@
 body{
  background:#0a0a14;
  color:white;
+ height:100vh;
  display:flex;
  justify-content:center;
  align-items:center;
- height:100vh;
 }
 
 /* LOGIN */
 .login{
  background:#111;
- padding:30px;
+ padding:25px;
  border:1px solid #00f7ff;
  text-align:center;
 }
-input{
- padding:10px;
- width:200px;
- margin-top:10px;
- border:none;
- outline:none;
-}
-button{
- margin-top:10px;
- padding:10px;
- width:100%;
- border:none;
- background:#00f7ff;
- cursor:pointer;
-}
+input{padding:10px;width:200px;margin-top:10px;border:none}
+button{padding:10px;border:none;background:#00f7ff;cursor:pointer;margin-top:10px}
 
-/* CHAT */
-.chat-container{
+/* MAIN */
+.app{
  display:none;
- width:400px;
+ width:700px;
  height:500px;
  background:#111;
  border:1px solid #00f7ff;
  display:flex;
- flex-direction:column;
 }
 
-.chat-header{
+/* USERS */
+.users{
+ width:30%;
+ border-right:1px solid #222;
  padding:10px;
- background:#00f7ff;
- color:black;
- text-align:center;
+}
+.user{
+ padding:5px;
+ margin-bottom:5px;
+ background:#0f172a;
+}
+
+/* CHAT */
+.chat{
+ width:70%;
+ display:flex;
+ flex-direction:column;
 }
 
 .chat-box{
@@ -68,8 +66,18 @@ button{
 }
 
 .msg{
- margin-bottom:8px;
- font-size:14px;
+ margin-bottom:10px;
+}
+
+.bubble{
+ padding:8px;
+ border-radius:8px;
+ display:inline-block;
+}
+
+.time{
+ font-size:10px;
+ color:#aaa;
 }
 
 .chat-input{
@@ -85,91 +93,152 @@ button{
 .chat-input button{
  width:80px;
 }
+
+/* COLORS */
+.c1{color:#00f7ff}
+.c2{color:#ff4d4d}
+.c3{color:#0f0}
+.c4{color:#ffcc00}
 </style>
 
 </head>
 
 <body>
 
-<!-- LOGIN -->
-
 <div class="login" id="loginBox">
- <h2>Nhập Username</h2>
+ <h3>Login</h3>
  <input id="username" placeholder="Username">
- <button onclick="login()">Vào Chat</button>
+ <button onclick="login()">Vào</button>
 </div>
 
-<!-- CHAT -->
+<div class="app" id="app">
 
-<div class="chat-container" id="chatUI">
- <div class="chat-header" id="chatHeader">Chat Room</div>
+ <!-- USERS -->
 
- <div class="chat-box" id="chatBox"></div>
-
- <div class="chat-input">
-   <input id="msgInput" placeholder="Nhập tin nhắn...">
-   <button onclick="sendMsg()">Gửi</button>
+ <div class="users">
+   <h4>Online</h4>
+   <div id="userList"></div>
+   <button onclick="clearChat()">🧹 Clear</button>
  </div>
+
+ <!-- CHAT -->
+
+ <div class="chat">
+   <div class="chat-box" id="chatBox"></div>
+
+   <div class="chat-input">
+     <input id="msgInput" placeholder="Nhắn gì đó...">
+     <button onclick="sendMsg()">Gửi</button>
+   </div>
+ </div>
+
 </div>
 
 <script>
 
-/* LOAD CHAT DATA */
-let chatData = JSON.parse(localStorage.getItem("chatData")) || [];
+/* USER COLORS */
+const colors = ["c1","c2","c3","c4"];
+
+/* DATABASE */
+let users = JSON.parse(localStorage.getItem("users")) || ["Admin","Player","Guest"];
+let chatData = JSON.parse(localStorage.getItem("chat")) || [];
 
 /* LOGIN */
 function login(){
- let user = username.value.trim();
- if(!user) return alert("Nhập username đi 😐");
+ let u = username.value.trim();
+ if(!u) return alert("Nhập tên 😐");
 
- localStorage.setItem("user", user);
+ if(!users.includes(u)) users.push(u);
 
+ localStorage.setItem("users", JSON.stringify(users));
+ localStorage.setItem("session", u);
+
+ start(u);
+}
+
+/* START */
+function start(user){
  loginBox.style.display="none";
- chatUI.style.display="flex";
+ app.style.display="flex";
 
- chatHeader.innerText = "👤 " + user + " | Chat Room";
-
+ renderUsers();
  renderChat();
 }
 
 /* AUTO LOGIN */
-let savedUser = localStorage.getItem("user");
-if(savedUser){
- loginBox.style.display="none";
- chatUI.style.display="flex";
- chatHeader.innerText = "👤 " + savedUser + " | Chat Room";
- renderChat();
+let session = localStorage.getItem("session");
+if(session) start(session);
+
+/* USERS LIST */
+function renderUsers(){
+ userList.innerHTML="";
+ users.forEach((u,i)=>{
+  let div=document.createElement("div");
+  div.className="user "+colors[i%colors.length];
+  div.innerText = "● " + u;
+  userList.appendChild(div);
+ });
 }
 
-/* RENDER CHAT */
+/* TIME */
+function getTime(){
+ let d=new Date();
+ return d.getHours()+":"+d.getMinutes();
+}
+
+/* CHAT */
 function renderChat(){
  chatBox.innerHTML="";
  chatData.forEach(m=>{
-  let div = document.createElement("div");
+  let div=document.createElement("div");
   div.className="msg";
-  div.innerText = m;
+
+  div.innerHTML = `
+   <div class="${m.color}"><b>${m.user}</b></div>
+   <div class="bubble">${m.text}</div>
+   <div class="time">${m.time}</div>
+  `;
+
   chatBox.appendChild(div);
  });
+
  chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-/* SEND MESSAGE */
+/* SEND */
 function sendMsg(){
  let text = msgInput.value.trim();
- let user = localStorage.getItem("user") || "Guest";
+ let user = localStorage.getItem("session");
 
  if(!text) return;
 
- chatData.push(user + ": " + text);
- localStorage.setItem("chatData", JSON.stringify(chatData));
+ let color = colors[Math.floor(Math.random()*colors.length)];
+
+ chatData.push({
+  user,
+  text,
+  time:getTime(),
+  color
+ });
+
+ localStorage.setItem("chat", JSON.stringify(chatData));
 
  msgInput.value="";
  renderChat();
 }
 
-/* ENTER KEY */
-msgInput?.addEventListener("keypress", function(e){
- if(e.key === "Enter") sendMsg();
+/* CLEAR */
+function clearChat(){
+ if(confirm("Xoá chat?")){
+  chatData=[];
+  localStorage.removeItem("chat");
+  renderChat();
+ }
+}
+
+/* ENTER */
+msgInput?.addEventListener("keypress", e=>{
+ if(e.key==="Enter") sendMsg();
 });
 
 </script>

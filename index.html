@@ -3,218 +3,236 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Redz Hub Clone</title>
+<title>Gaming Hub Pro</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family: 'Segoe UI', sans-serif;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Orbitron', sans-serif;
 }
 
-body{
-  background: linear-gradient(180deg,#020617,#0f172a);
-  color:white;
+body {
+  background: radial-gradient(circle at top, #0f0f1a, #050510);
+  color: white;
+  overflow-x: hidden;
 }
 
-/* HEADER */
-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:15px 40px;
-  background:#020617;
-  border-bottom:1px solid #1e293b;
+/* NAVBAR */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 40px;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: 999;
 }
 
-.logo{
-  font-size:24px;
-  font-weight:bold;
-  color:#22c55e;
-  text-shadow:0 0 10px #22c55e;
+.logo {
+  font-size: 24px;
+  color: #00f7ff;
+  text-shadow: 0 0 10px #00f7ff;
 }
 
-nav a{
-  margin-left:25px;
-  text-decoration:none;
-  color:#94a3b8;
-  transition:0.3s;
+.menu a {
+  margin-left: 25px;
+  text-decoration: none;
+  color: white;
+  transition: 0.3s;
 }
 
-nav a:hover{
-  color:#22c55e;
+.menu a:hover {
+  color: #00f7ff;
 }
 
 /* HERO */
-.hero{
-  text-align:center;
-  padding:100px 20px;
+.hero {
+  height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  position: relative;
 }
 
-.hero h1{
-  font-size:50px;
-  background:linear-gradient(90deg,#22c55e,#4ade80);
-  -webkit-background-clip:text;
-  color:transparent;
+.hero::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: url("https://images.unsplash.com/photo-1542751371-adc38448a05e") center/cover;
+  opacity: 0.15;
 }
 
-.hero p{
-  margin-top:10px;
-  color:#94a3b8;
+.hero h1 {
+  font-size: 60px;
+  color: #00f7ff;
+  text-shadow: 0 0 25px #00f7ff;
+  z-index: 1;
+  animation: glow 2s infinite alternate;
 }
 
-/* BUTTON */
-.btn{
-  margin-top:25px;
-  padding:12px 28px;
-  border:none;
-  border-radius:10px;
-  background:#22c55e;
-  color:white;
-  cursor:pointer;
-  transition:0.3s;
+@keyframes glow {
+  from { text-shadow: 0 0 10px #00f7ff; }
+  to { text-shadow: 0 0 30px #00f7ff; }
 }
 
-.btn:hover{
-  background:#16a34a;
-  box-shadow:0 0 15px #22c55e;
+.hero p {
+  margin-top: 15px;
+  color: #ccc;
+  z-index: 1;
 }
 
-/* GRID */
-.container{
-  padding:50px;
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:25px;
+.btn {
+  margin-top: 20px;
+  padding: 12px 30px;
+  border: 2px solid #00f7ff;
+  background: transparent;
+  color: #00f7ff;
+  cursor: pointer;
+  transition: 0.3s;
+  z-index: 1;
 }
 
-/* CARD */
-.card{
-  background:#020617;
-  border:1px solid #1e293b;
-  padding:20px;
-  border-radius:15px;
-  transition:0.3s;
-  position:relative;
-  overflow:hidden;
+.btn:hover {
+  background: #00f7ff;
+  color: black;
+  box-shadow: 0 0 20px #00f7ff;
 }
 
-.card::before{
-  content:"";
-  position:absolute;
-  width:100%;
-  height:100%;
-  top:0;
-  left:0;
-  background:linear-gradient(120deg,transparent,#22c55e33,transparent);
-  opacity:0;
-  transition:0.3s;
+/* SECTION */
+.section {
+  padding: 60px 40px;
 }
 
-.card:hover::before{
-  opacity:1;
+.section h2 {
+  text-align: center;
+  margin-bottom: 40px;
+  color: #00f7ff;
 }
 
-.card:hover{
-  transform:translateY(-7px);
-  border-color:#22c55e;
+/* CARDS */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
+  gap: 25px;
 }
 
-.card h3{
-  margin-bottom:10px;
+.card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid #222;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: 0.4s;
+  position: relative;
 }
 
-.card p{
-  color:#94a3b8;
-  margin-bottom:15px;
+.card:hover {
+  transform: translateY(-10px) scale(1.02);
+  border-color: #00f7ff;
+  box-shadow: 0 0 25px #00f7ff33;
 }
 
-/* CODE BOX */
-.code{
-  background:#0f172a;
-  padding:10px;
-  border-radius:8px;
-  font-size:13px;
-  color:#22c55e;
-  margin-bottom:10px;
-  overflow:auto;
+.card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+
+.card-content {
+  padding: 15px;
+}
+
+.card h3 {
+  margin-bottom: 10px;
+}
+
+.card p {
+  color: #aaa;
+  font-size: 14px;
 }
 
 /* FOOTER */
-footer{
-  text-align:center;
-  padding:20px;
-  border-top:1px solid #1e293b;
-  color:#64748b;
+.footer {
+  text-align: center;
+  padding: 25px;
+  background: #111;
+  border-top: 1px solid #222;
+  margin-top: 50px;
 }
 
-/* ANIMATION */
-.fade{
-  animation:fadeIn 1s ease;
-}
-
-@keyframes fadeIn{
-  from{opacity:0; transform:translateY(20px);}
-  to{opacity:1; transform:translateY(0);}
+/* RESPONSIVE */
+@media(max-width: 768px) {
+  .hero h1 {
+    font-size: 35px;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<header>
-  <div class="logo">RedzHub</div>
-  <nav>
+<!-- NAVBAR -->
+<div class="navbar">
+  <div class="logo">🎮 ZyGaming</div>
+  <div class="menu">
     <a href="#">Home</a>
+    <a href="#">Games</a>
     <a href="#">Scripts</a>
-    <a href="#">Executor</a>
     <a href="#">Contact</a>
-  </nav>
-</header>
-
-<section class="hero fade">
-  <h1>Best Script Hub</h1>
-  <p>Kho script game đẹp – nhanh – miễn phí</p>
-  <button class="btn">Explore Now</button>
-</section>
-
-<section class="container fade">
-
-  <div class="card">
-    <h3>Auto Farm</h3>
-    <p>Farm tự động siêu nhanh</p>
-    <div class="code" id="code1">loadstring(game:HttpGet("https://script1"))()</div>
-    <button class="btn" onclick="copyCode('code1')">Copy</button>
   </div>
+</div>
 
-  <div class="card">
-    <h3>Auto Level</h3>
-    <p>Tăng level cực nhanh</p>
-    <div class="code" id="code2">loadstring(game:HttpGet("https://script2"))()</div>
-    <button class="btn" onclick="copyCode('code2')">Copy</button>
+<!-- HERO -->
+<div class="hero">
+  <h1>LEVEL UP YOUR GAME</h1>
+  <p>Website gaming hiện đại chuẩn hacker 😎</p>
+  <button class="btn">Bắt đầu</button>
+</div>
+
+<!-- SECTION -->
+<div class="section">
+  <h2>🔥 Game Hot</h2>
+
+  <div class="cards">
+    
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420">
+      <div class="card-content">
+        <h3>Cyber Battle</h3>
+        <p>Game hành động cực cháy.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1505740106531-4243f3831c78">
+      <div class="card-content">
+        <h3>Night War</h3>
+        <p>Chiến đấu trong bóng tối.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1493711662062-fa541adb3fc8">
+      <div class="card-content">
+        <h3>FPS Arena</h3>
+        <p>Bắn súng đỉnh cao.</p>
+      </div>
+    </div>
+
   </div>
+</div>
 
-  <div class="card">
-    <h3>Teleport</h3>
-    <p>Dịch chuyển tức thời</p>
-    <div class="code" id="code3">loadstring(game:HttpGet("https://script3"))()</div>
-    <button class="btn" onclick="copyCode('code3')">Copy</button>
-  </div>
-
-</section>
-
-<footer>
-  © 2026 RedzHub Clone by You
-</footer>
-
-<script>
-function copyCode(id){
-  let text = document.getElementById(id).innerText;
-  navigator.clipboard.writeText(text);
-  alert("Đã copy script!");
-}
-</script>
+<!-- FOOTER -->
+<div class="footer">
+  © 2026 ZyGaming | Designed by bạn 😎
+</div>
 
 </body>
 </html>

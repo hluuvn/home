@@ -3,236 +3,235 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gaming Hub Pro</title>
+<title>ZyGaming Pro</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Orbitron', sans-serif;
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Orbitron',sans-serif}
+body{background:#0a0a14;color:white;overflow-x:hidden}
+
+/* LOADING */
+#loader{
+ position:fixed;
+ width:100%;
+ height:100%;
+ background:black;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ z-index:9999;
+}
+.loader-text{
+ color:#00f7ff;
+ font-size:30px;
+ animation:blink 1s infinite;
+}
+@keyframes blink{50%{opacity:0}}
+
+/* PARTICLE */
+canvas{
+ position:fixed;
+ top:0;
+ left:0;
+ z-index:-1;
 }
 
-body {
-  background: radial-gradient(circle at top, #0f0f1a, #050510);
-  color: white;
-  overflow-x: hidden;
+/* NAV */
+.navbar{
+ display:flex;
+ justify-content:space-between;
+ padding:20px;
+ background:rgba(0,0,0,0.6);
+ backdrop-filter:blur(10px);
 }
-
-/* NAVBAR */
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  padding: 20px 40px;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(10px);
-  position: sticky;
-  top: 0;
-  z-index: 999;
-}
-
-.logo {
-  font-size: 24px;
-  color: #00f7ff;
-  text-shadow: 0 0 10px #00f7ff;
-}
-
-.menu a {
-  margin-left: 25px;
-  text-decoration: none;
-  color: white;
-  transition: 0.3s;
-}
-
-.menu a:hover {
-  color: #00f7ff;
+.logo{color:#00f7ff;font-size:22px}
+.menu button{
+ margin-left:10px;
+ padding:8px 15px;
+ background:#00f7ff;
+ border:none;
+ cursor:pointer;
 }
 
 /* HERO */
-.hero {
-  height: 90vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  text-align: center;
-  position: relative;
-}
-
-.hero::before {
-  content: "";
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: url("https://images.unsplash.com/photo-1542751371-adc38448a05e") center/cover;
-  opacity: 0.15;
-}
-
-.hero h1 {
-  font-size: 60px;
-  color: #00f7ff;
-  text-shadow: 0 0 25px #00f7ff;
-  z-index: 1;
-  animation: glow 2s infinite alternate;
-}
-
-@keyframes glow {
-  from { text-shadow: 0 0 10px #00f7ff; }
-  to { text-shadow: 0 0 30px #00f7ff; }
-}
-
-.hero p {
-  margin-top: 15px;
-  color: #ccc;
-  z-index: 1;
-}
-
-.btn {
-  margin-top: 20px;
-  padding: 12px 30px;
-  border: 2px solid #00f7ff;
-  background: transparent;
-  color: #00f7ff;
-  cursor: pointer;
-  transition: 0.3s;
-  z-index: 1;
-}
-
-.btn:hover {
-  background: #00f7ff;
-  color: black;
-  box-shadow: 0 0 20px #00f7ff;
-}
-
-/* SECTION */
-.section {
-  padding: 60px 40px;
-}
-
-.section h2 {
-  text-align: center;
-  margin-bottom: 40px;
-  color: #00f7ff;
-}
+.hero{text-align:center;padding:80px 20px}
+.hero h1{color:#00f7ff}
 
 /* CARDS */
-.cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
-  gap: 25px;
+.cards{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+ gap:20px;
+ padding:20px;
+}
+.card{
+ background:#111;
+ padding:20px;
+ cursor:pointer;
+ transition:0.3s;
+}
+.card:hover{
+ transform:scale(1.05);
+ box-shadow:0 0 20px #00f7ff;
 }
 
-.card {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid #222;
-  border-radius: 10px;
-  overflow: hidden;
-  transition: 0.4s;
-  position: relative;
+/* POPUP */
+.popup{
+ position:fixed;
+ top:50%;
+ left:50%;
+ transform:translate(-50%,-50%);
+ background:#111;
+ padding:30px;
+ display:none;
+ z-index:999;
 }
+.popup button{margin-top:10px}
 
-.card:hover {
-  transform: translateY(-10px) scale(1.02);
-  border-color: #00f7ff;
-  box-shadow: 0 0 25px #00f7ff33;
+/* AUTH */
+.auth{
+ position:fixed;
+ top:50%;
+ left:50%;
+ transform:translate(-50%,-50%);
+ background:#111;
+ padding:20px;
+ display:none;
+ z-index:999;
 }
-
-.card img {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-}
-
-.card-content {
-  padding: 15px;
-}
-
-.card h3 {
-  margin-bottom: 10px;
-}
-
-.card p {
-  color: #aaa;
-  font-size: 14px;
-}
-
-/* FOOTER */
-.footer {
-  text-align: center;
-  padding: 25px;
-  background: #111;
-  border-top: 1px solid #222;
-  margin-top: 50px;
-}
-
-/* RESPONSIVE */
-@media(max-width: 768px) {
-  .hero h1 {
-    font-size: 35px;
-  }
+input{
+ display:block;
+ margin:10px 0;
+ padding:8px;
+ width:200px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
+<!-- LOADING -->
+<div id="loader"><div class="loader-text">LOADING...</div></div>
+
+<canvas id="particles"></canvas>
+
+<!-- NAV -->
 <div class="navbar">
-  <div class="logo">🎮 ZyGaming</div>
-  <div class="menu">
-    <a href="#">Home</a>
-    <a href="#">Games</a>
-    <a href="#">Scripts</a>
-    <a href="#">Contact</a>
-  </div>
+ <div class="logo">🎮 ZyGaming</div>
+ <div class="menu">
+   <button onclick="openLogin()">Login</button>
+   <button onclick="openRegister()">Register</button>
+ </div>
 </div>
 
 <!-- HERO -->
 <div class="hero">
-  <h1>LEVEL UP YOUR GAME</h1>
-  <p>Website gaming hiện đại chuẩn hacker 😎</p>
-  <button class="btn">Bắt đầu</button>
+ <h1>LEVEL 3 GAMING WEBSITE</h1>
+ <p>Fake API + Popup + Effects 😈</p>
 </div>
 
-<!-- SECTION -->
-<div class="section">
-  <h2>🔥 Game Hot</h2>
+<!-- CARDS -->
+<div class="cards" id="gameList"></div>
 
-  <div class="cards">
-    
-    <div class="card">
-      <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420">
-      <div class="card-content">
-        <h3>Cyber Battle</h3>
-        <p>Game hành động cực cháy.</p>
-      </div>
-    </div>
-
-    <div class="card">
-      <img src="https://images.unsplash.com/photo-1505740106531-4243f3831c78">
-      <div class="card-content">
-        <h3>Night War</h3>
-        <p>Chiến đấu trong bóng tối.</p>
-      </div>
-    </div>
-
-    <div class="card">
-      <img src="https://images.unsplash.com/photo-1493711662062-fa541adb3fc8">
-      <div class="card-content">
-        <h3>FPS Arena</h3>
-        <p>Bắn súng đỉnh cao.</p>
-      </div>
-    </div>
-
-  </div>
+<!-- POPUP GAME -->
+<div class="popup" id="popup">
+ <h2 id="gameTitle"></h2>
+ <p>Đây là thông tin game (fake API)</p>
+ <button onclick="closePopup()">Đóng</button>
 </div>
 
-<!-- FOOTER -->
-<div class="footer">
-  © 2026 ZyGaming | Designed by bạn 😎
+<!-- LOGIN -->
+<div class="auth" id="loginBox">
+ <h3>Login</h3>
+ <input placeholder="Username">
+ <input placeholder="Password" type="password">
+ <button onclick="alert('Login giả lập 😎')">Login</button>
 </div>
+
+<!-- REGISTER -->
+<div class="auth" id="registerBox">
+ <h3>Register</h3>
+ <input placeholder="Username">
+ <input placeholder="Password" type="password">
+ <button onclick="alert('Register giả lập 😎')">Register</button>
+</div>
+
+<script>
+
+/* LOADING */
+window.onload = () => {
+ setTimeout(()=>{document.getElementById("loader").style.display="none"},1500)
+}
+
+/* PARTICLE */
+const canvas = document.getElementById("particles");
+const ctx = canvas.getContext("2d");
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+
+let particles = [];
+for(let i=0;i<80;i++){
+ particles.push({
+  x:Math.random()*canvas.width,
+  y:Math.random()*canvas.height,
+  r:Math.random()*2,
+  d:Math.random()*2
+ });
+}
+
+function draw(){
+ ctx.clearRect(0,0,canvas.width,canvas.height);
+ ctx.fillStyle="#00f7ff";
+ particles.forEach(p=>{
+  ctx.beginPath();
+  ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+  ctx.fill();
+ });
+ update();
+}
+function update(){
+ particles.forEach(p=>{
+  p.y+=p.d;
+  if(p.y>canvas.height) p.y=0;
+ });
+}
+setInterval(draw,30);
+
+/* FAKE API */
+const fakeAPI = [
+ {name:"Cyber War"},
+ {name:"FPS Elite"},
+ {name:"Dark Night"}
+];
+
+const gameList = document.getElementById("gameList");
+fakeAPI.forEach(game=>{
+ let div = document.createElement("div");
+ div.className="card";
+ div.innerHTML = `<h3>${game.name}</h3>`;
+ div.onclick = ()=>openGame(game.name);
+ gameList.appendChild(div);
+});
+
+/* POPUP */
+function openGame(name){
+ document.getElementById("popup").style.display="block";
+ document.getElementById("gameTitle").innerText=name;
+}
+function closePopup(){
+ document.getElementById("popup").style.display="none";
+}
+
+/* AUTH */
+function openLogin(){
+ document.getElementById("loginBox").style.display="block";
+}
+function openRegister(){
+ document.getElementById("registerBox").style.display="block";
+}
+
+</script>
 
 </body>
 </html>

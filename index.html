@@ -1,235 +1,208 @@
 <!DOCTYPE html>
+
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ZyGaming Pro</title>
+<title>ZyGaming Social</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Orbitron',sans-serif}
-body{background:#0a0a14;color:white;overflow-x:hidden}
-
-/* LOADING */
-#loader{
- position:fixed;
- width:100%;
- height:100%;
- background:black;
- display:flex;
- align-items:center;
- justify-content:center;
- z-index:9999;
-}
-.loader-text{
- color:#00f7ff;
- font-size:30px;
- animation:blink 1s infinite;
-}
-@keyframes blink{50%{opacity:0}}
-
-/* PARTICLE */
-canvas{
- position:fixed;
- top:0;
- left:0;
- z-index:-1;
-}
+body{background:#0a0a14;color:white}
 
 /* NAV */
 .navbar{
  display:flex;
  justify-content:space-between;
- padding:20px;
- background:rgba(0,0,0,0.6);
- backdrop-filter:blur(10px);
+ padding:15px 25px;
+ background:#111;
 }
-.logo{color:#00f7ff;font-size:22px}
-.menu button{
- margin-left:10px;
+.logo{color:#00f7ff}
+.user{color:#0f0}
+
+/* LOGIN */
+.login{
+ position:fixed;
+ top:50%;
+ left:50%;
+ transform:translate(-50%,-50%);
+ background:#111;
+ padding:25px;
+ z-index:999;
+}
+input{padding:10px;margin-top:10px;width:220px}
+button{
+ margin-top:10px;
  padding:8px 15px;
- background:#00f7ff;
  border:none;
+ background:#00f7ff;
  cursor:pointer;
 }
 
-/* HERO */
-.hero{text-align:center;padding:80px 20px}
-.hero h1{color:#00f7ff}
+/* CONTENT */
+.container{padding:20px;display:none}
 
-/* CARDS */
-.cards{
+/* GAME LIST */
+.games{
  display:grid;
- grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
- gap:20px;
- padding:20px;
+ grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+ gap:15px;
 }
-.card{
+.game{
  background:#111;
- padding:20px;
- cursor:pointer;
- transition:0.3s;
+ padding:15px;
+ border:1px solid #222;
 }
-.card:hover{
- transform:scale(1.05);
- box-shadow:0 0 20px #00f7ff;
+.rank{
+ color:gold;
+ font-size:12px;
 }
 
-/* POPUP */
-.popup{
+/* CHAT */
+.chat{
  position:fixed;
- top:50%;
- left:50%;
- transform:translate(-50%,-50%);
+ bottom:0;
+ right:0;
+ width:300px;
  background:#111;
- padding:30px;
- display:none;
- z-index:999;
+ border-top:2px solid #00f7ff;
 }
-.popup button{margin-top:10px}
-
-/* AUTH */
-.auth{
- position:fixed;
- top:50%;
- left:50%;
- transform:translate(-50%,-50%);
- background:#111;
- padding:20px;
- display:none;
- z-index:999;
+.chat-box{
+ height:200px;
+ overflow-y:auto;
+ padding:10px;
+ font-size:12px;
 }
-input{
- display:block;
- margin:10px 0;
+.msg{margin-bottom:5px}
+.chat input{
+ width:70%;
  padding:8px;
- width:200px;
+ border:none;
 }
+.chat button{
+ width:30%;
+}
+
+/* SCROLL */
+.chat-box::-webkit-scrollbar{width:5px}
+.chat-box::-webkit-scrollbar-thumb{background:#00f7ff}
 </style>
+
 </head>
 
 <body>
 
-<!-- LOADING -->
-<div id="loader"><div class="loader-text">LOADING...</div></div>
-
-<canvas id="particles"></canvas>
-
-<!-- NAV -->
 <div class="navbar">
  <div class="logo">🎮 ZyGaming</div>
- <div class="menu">
-   <button onclick="openLogin()">Login</button>
-   <button onclick="openRegister()">Register</button>
- </div>
-</div>
-
-<!-- HERO -->
-<div class="hero">
- <h1>LEVEL 3 GAMING WEBSITE</h1>
- <p>Fake API + Popup + Effects 😈</p>
-</div>
-
-<!-- CARDS -->
-<div class="cards" id="gameList"></div>
-
-<!-- POPUP GAME -->
-<div class="popup" id="popup">
- <h2 id="gameTitle"></h2>
- <p>Đây là thông tin game (fake API)</p>
- <button onclick="closePopup()">Đóng</button>
+ <div class="user" id="userBox"></div>
 </div>
 
 <!-- LOGIN -->
-<div class="auth" id="loginBox">
- <h3>Login</h3>
- <input placeholder="Username">
- <input placeholder="Password" type="password">
- <button onclick="alert('Login giả lập 😎')">Login</button>
+
+<div class="login" id="loginBox">
+ <h3>Nhập Username</h3>
+ <input id="username" placeholder="Username">
+ <button onclick="login()">Vào</button>
 </div>
 
-<!-- REGISTER -->
-<div class="auth" id="registerBox">
- <h3>Register</h3>
- <input placeholder="Username">
- <input placeholder="Password" type="password">
- <button onclick="alert('Register giả lập 😎')">Register</button>
+<!-- MAIN -->
+
+<div class="container" id="main">
+
+ <h2>🔥 Game List</h2>
+ <div class="games" id="gameList"></div>
+
+</div>
+
+<!-- CHAT -->
+
+<div class="chat">
+ <div class="chat-box" id="chatBox"></div>
+ <div style="display:flex">
+  <input id="chatInput" placeholder="Nhắn gì đó...">
+  <button onclick="sendMsg()">Gửi</button>
+ </div>
 </div>
 
 <script>
 
-/* LOADING */
-window.onload = () => {
- setTimeout(()=>{document.getElementById("loader").style.display="none"},1500)
+/* FAKE DATABASE USERS + RANK */
+let users = JSON.parse(localStorage.getItem("usersDB")) || {
+  "Admin": {rank:"👑 Admin"},
+  "Player1": {rank:"🔥 Pro"},
+  "Noob": {rank:"🐣 Newbie"}
+};
+
+/* LOGIN */
+function login(){
+ let u = username.value.trim();
+ if(!u) return alert("Nhập tên đi 😐");
+
+ if(!users[u]){
+  users[u] = {rank:"🎮 Member"};
+ }
+
+ localStorage.setItem("usersDB", JSON.stringify(users));
+ localStorage.setItem("session", u);
+
+ start(u);
 }
 
-/* PARTICLE */
-const canvas = document.getElementById("particles");
-const ctx = canvas.getContext("2d");
-canvas.width = innerWidth;
-canvas.height = innerHeight;
+/* AUTO LOGIN */
+let session = localStorage.getItem("session");
+if(session) start(session);
 
-let particles = [];
-for(let i=0;i<80;i++){
- particles.push({
-  x:Math.random()*canvas.width,
-  y:Math.random()*canvas.height,
-  r:Math.random()*2,
-  d:Math.random()*2
- });
+function start(user){
+ loginBox.style.display="none";
+ main.style.display="block";
+ userBox.innerText = user + " - " + users[user].rank;
 }
 
-function draw(){
- ctx.clearRect(0,0,canvas.width,canvas.height);
- ctx.fillStyle="#00f7ff";
- particles.forEach(p=>{
-  ctx.beginPath();
-  ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-  ctx.fill();
- });
- update();
-}
-function update(){
- particles.forEach(p=>{
-  p.y+=p.d;
-  if(p.y>canvas.height) p.y=0;
- });
-}
-setInterval(draw,30);
-
-/* FAKE API */
+/* FAKE API GAME */
 const fakeAPI = [
  {name:"Cyber War"},
  {name:"FPS Elite"},
- {name:"Dark Night"}
+ {name:"Zombie Mode"},
+ {name:"Night Battle"}
 ];
 
 const gameList = document.getElementById("gameList");
-fakeAPI.forEach(game=>{
+fakeAPI.forEach(g=>{
  let div = document.createElement("div");
- div.className="card";
- div.innerHTML = `<h3>${game.name}</h3>`;
- div.onclick = ()=>openGame(game.name);
+ div.className="game";
+ div.innerHTML = `<h3>${g.name}</h3><div class="rank">Free</div>`;
  gameList.appendChild(div);
 });
 
-/* POPUP */
-function openGame(name){
- document.getElementById("popup").style.display="block";
- document.getElementById("gameTitle").innerText=name;
-}
-function closePopup(){
- document.getElementById("popup").style.display="none";
+/* CHAT SYSTEM */
+let chatData = JSON.parse(localStorage.getItem("chat")) || [];
+
+function renderChat(){
+ chatBox.innerHTML="";
+ chatData.forEach(m=>{
+  let div=document.createElement("div");
+  div.className="msg";
+  div.innerText = m;
+  chatBox.appendChild(div);
+ });
+ chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-/* AUTH */
-function openLogin(){
- document.getElementById("loginBox").style.display="block";
+function sendMsg(){
+ let text = chatInput.value;
+ let user = localStorage.getItem("session") || "Guest";
+ if(!text) return;
+
+ chatData.push(user + ": " + text);
+ localStorage.setItem("chat", JSON.stringify(chatData));
+
+ chatInput.value="";
+ renderChat();
 }
-function openRegister(){
- document.getElementById("registerBox").style.display="block";
-}
+
+renderChat();
 
 </script>
 

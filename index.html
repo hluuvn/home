@@ -4,185 +4,148 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ZyGaming Social</title>
+<title>Gaming Chat</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Orbitron',sans-serif}
-body{background:#0a0a14;color:white}
 
-/* NAV */
-.navbar{
+body{
+ background:#0a0a14;
+ color:white;
  display:flex;
- justify-content:space-between;
- padding:15px 25px;
- background:#111;
+ justify-content:center;
+ align-items:center;
+ height:100vh;
 }
-.logo{color:#00f7ff}
-.user{color:#0f0}
 
 /* LOGIN */
 .login{
- position:fixed;
- top:50%;
- left:50%;
- transform:translate(-50%,-50%);
  background:#111;
- padding:25px;
- z-index:999;
+ padding:30px;
+ border:1px solid #00f7ff;
+ text-align:center;
 }
-input{padding:10px;margin-top:10px;width:220px}
+input{
+ padding:10px;
+ width:200px;
+ margin-top:10px;
+ border:none;
+ outline:none;
+}
 button{
  margin-top:10px;
- padding:8px 15px;
+ padding:10px;
+ width:100%;
  border:none;
  background:#00f7ff;
  cursor:pointer;
 }
 
-/* CONTENT */
-.container{padding:20px;display:none}
-
-/* GAME LIST */
-.games{
- display:grid;
- grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
- gap:15px;
-}
-.game{
- background:#111;
- padding:15px;
- border:1px solid #222;
-}
-.rank{
- color:gold;
- font-size:12px;
-}
-
 /* CHAT */
-.chat{
- position:fixed;
- bottom:0;
- right:0;
- width:300px;
+.chat-container{
+ display:none;
+ width:400px;
+ height:500px;
  background:#111;
- border-top:2px solid #00f7ff;
+ border:1px solid #00f7ff;
+ display:flex;
+ flex-direction:column;
 }
-.chat-box{
- height:200px;
- overflow-y:auto;
+
+.chat-header{
  padding:10px;
- font-size:12px;
+ background:#00f7ff;
+ color:black;
+ text-align:center;
 }
-.msg{margin-bottom:5px}
-.chat input{
- width:70%;
- padding:8px;
+
+.chat-box{
+ flex:1;
+ padding:10px;
+ overflow-y:auto;
+}
+
+.msg{
+ margin-bottom:8px;
+ font-size:14px;
+}
+
+.chat-input{
+ display:flex;
+}
+
+.chat-input input{
+ flex:1;
+ padding:10px;
  border:none;
 }
-.chat button{
- width:30%;
-}
 
-/* SCROLL */
-.chat-box::-webkit-scrollbar{width:5px}
-.chat-box::-webkit-scrollbar-thumb{background:#00f7ff}
+.chat-input button{
+ width:80px;
+}
 </style>
 
 </head>
 
 <body>
 
-<div class="navbar">
- <div class="logo">🎮 ZyGaming</div>
- <div class="user" id="userBox"></div>
-</div>
-
 <!-- LOGIN -->
 
 <div class="login" id="loginBox">
- <h3>Nhập Username</h3>
+ <h2>Nhập Username</h2>
  <input id="username" placeholder="Username">
- <button onclick="login()">Vào</button>
-</div>
-
-<!-- MAIN -->
-
-<div class="container" id="main">
-
- <h2>🔥 Game List</h2>
- <div class="games" id="gameList"></div>
-
+ <button onclick="login()">Vào Chat</button>
 </div>
 
 <!-- CHAT -->
 
-<div class="chat">
+<div class="chat-container" id="chatUI">
+ <div class="chat-header" id="chatHeader">Chat Room</div>
+
  <div class="chat-box" id="chatBox"></div>
- <div style="display:flex">
-  <input id="chatInput" placeholder="Nhắn gì đó...">
-  <button onclick="sendMsg()">Gửi</button>
+
+ <div class="chat-input">
+   <input id="msgInput" placeholder="Nhập tin nhắn...">
+   <button onclick="sendMsg()">Gửi</button>
  </div>
 </div>
 
 <script>
 
-/* FAKE DATABASE USERS + RANK */
-let users = JSON.parse(localStorage.getItem("usersDB")) || {
-  "Admin": {rank:"👑 Admin"},
-  "Player1": {rank:"🔥 Pro"},
-  "Noob": {rank:"🐣 Newbie"}
-};
+/* LOAD CHAT DATA */
+let chatData = JSON.parse(localStorage.getItem("chatData")) || [];
 
 /* LOGIN */
 function login(){
- let u = username.value.trim();
- if(!u) return alert("Nhập tên đi 😐");
+ let user = username.value.trim();
+ if(!user) return alert("Nhập username đi 😐");
 
- if(!users[u]){
-  users[u] = {rank:"🎮 Member"};
- }
+ localStorage.setItem("user", user);
 
- localStorage.setItem("usersDB", JSON.stringify(users));
- localStorage.setItem("session", u);
+ loginBox.style.display="none";
+ chatUI.style.display="flex";
 
- start(u);
+ chatHeader.innerText = "👤 " + user + " | Chat Room";
+
+ renderChat();
 }
 
 /* AUTO LOGIN */
-let session = localStorage.getItem("session");
-if(session) start(session);
-
-function start(user){
+let savedUser = localStorage.getItem("user");
+if(savedUser){
  loginBox.style.display="none";
- main.style.display="block";
- userBox.innerText = user + " - " + users[user].rank;
+ chatUI.style.display="flex";
+ chatHeader.innerText = "👤 " + savedUser + " | Chat Room";
+ renderChat();
 }
 
-/* FAKE API GAME */
-const fakeAPI = [
- {name:"Cyber War"},
- {name:"FPS Elite"},
- {name:"Zombie Mode"},
- {name:"Night Battle"}
-];
-
-const gameList = document.getElementById("gameList");
-fakeAPI.forEach(g=>{
- let div = document.createElement("div");
- div.className="game";
- div.innerHTML = `<h3>${g.name}</h3><div class="rank">Free</div>`;
- gameList.appendChild(div);
-});
-
-/* CHAT SYSTEM */
-let chatData = JSON.parse(localStorage.getItem("chat")) || [];
-
+/* RENDER CHAT */
 function renderChat(){
  chatBox.innerHTML="";
  chatData.forEach(m=>{
-  let div=document.createElement("div");
+  let div = document.createElement("div");
   div.className="msg";
   div.innerText = m;
   chatBox.appendChild(div);
@@ -190,19 +153,24 @@ function renderChat(){
  chatBox.scrollTop = chatBox.scrollHeight;
 }
 
+/* SEND MESSAGE */
 function sendMsg(){
- let text = chatInput.value;
- let user = localStorage.getItem("session") || "Guest";
+ let text = msgInput.value.trim();
+ let user = localStorage.getItem("user") || "Guest";
+
  if(!text) return;
 
  chatData.push(user + ": " + text);
- localStorage.setItem("chat", JSON.stringify(chatData));
+ localStorage.setItem("chatData", JSON.stringify(chatData));
 
- chatInput.value="";
+ msgInput.value="";
  renderChat();
 }
 
-renderChat();
+/* ENTER KEY */
+msgInput?.addEventListener("keypress", function(e){
+ if(e.key === "Enter") sendMsg();
+});
 
 </script>
 
